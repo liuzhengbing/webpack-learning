@@ -1,0 +1,1 @@
+declare const ICON_URL: string;

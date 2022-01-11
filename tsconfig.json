@@ -1,0 +1,39 @@
+{
+  "compilerOptions": {
+    "outDir": "./build/",
+    "target": "es6",
+    "module": "esnext",
+    "lib": ["es7", "dom"],
+    "jsx": "react",
+    "strict": true,
+    "experimentalDecorators": true,
+    "sourceMap": true,
+    "moduleResolution": "node",
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedParameters": true,
+    "skipLibCheck": true,
+    "rootDir": "./",
+    "baseUrl": "src",
+    "paths": {
+      "@/*": ["./*"]
+    },
+    "useUnknownInCatchVariables": false
+  },
+  "include": [
+    "./src"
+  ],
+  "exclude": [
+    "node_modules",
+    "build"
+  ],
+  "ts-node": {
+    "compilerOptions": {
+      "module": "CommonJS"
+    }
+  }
+}

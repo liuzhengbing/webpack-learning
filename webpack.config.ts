@@ -5,14 +5,14 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 import PostcssPresetEnv from 'postcss-preset-env';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 
-type EnvType = "none" | "development" | "production" | undefined
+type EnvType = 'none' | 'development' | 'production' | undefined;
 
 const config: webpack.Configuration = {
   mode: process.env.NODE_ENV as EnvType,
-  devtool: process.env.NODE_ENV === 'development'? 'eval-cheap-module-source-map': false,
+  devtool: process.env.NODE_ENV === 'development' ? 'eval-cheap-module-source-map' : false,
   entry: './src/index.tsx',
   output: {
-    filename: 'main.js',
+    filename: '[name].bundle.js',
     path: path.resolve(__dirname, 'build'),
     // 编译前清除目录
     clean: true,
@@ -22,7 +22,7 @@ const config: webpack.Configuration = {
       '@': path.resolve(__dirname, 'src/'),
     },
     extensions: ['.ts', '.tsx', '.js'], // 自行补全文件后缀
-    modules: [ 'node_modules'], // 对于直接声明依赖名的模块（如 react ），设置解析模块时应该搜索的目录，优化打包构建速度
+    modules: ['node_modules'], // 对于直接声明依赖名的模块（如 react ），设置解析模块时应该搜索的目录，优化打包构建速度
   },
   module: {
     rules: [
@@ -34,37 +34,37 @@ const config: webpack.Configuration = {
           {
             loader: 'babel-loader',
             options: {
-              "presets": [
+              presets: [
                 [
-                  "@babel/preset-env",
+                  '@babel/preset-env',
                   {
                     targets: {
-                      browsers: ["> 0.25%, not dead"]
+                      browsers: ['> 0.25%, not dead'],
                     },
                     // useBuiltIns: "usage",
                     // corejs: "3"
-                  }
-                ]
+                  },
+                ],
               ],
-              "plugins": [
+              plugins: [
                 [
-                  "@babel/plugin-transform-runtime",
+                  '@babel/plugin-transform-runtime',
                   {
                     corejs: 3,
                     // helpers: true,
                     // regenerator: true
-                  }
-                ]
-              ]
-            }
+                  },
+                ],
+              ],
+            },
           },
           {
             loader: 'ts-loader', // 代替了babel，配置文件是tsconfig.json
             options: {
               transpileOnly: false, // 默认值false，当为true时则编译器只做语言转换不做类型检查
-            }
-          }
-        ]
+            },
+          },
+        ],
       },
       {
         test: /\.js$/,
@@ -73,31 +73,31 @@ const config: webpack.Configuration = {
           {
             loader: 'babel-loader',
             options: {
-              "presets": [
+              presets: [
                 [
-                  "@babel/preset-env",
+                  '@babel/preset-env',
                   {
                     targets: {
-                      browsers: ["> 0.25%, not dead"]
+                      browsers: ['> 0.25%, not dead'],
                     },
                     // useBuiltIns: "usage",
                     // corejs: "3"
-                  }
-                ]
+                  },
+                ],
               ],
-              "plugins": [
+              plugins: [
                 [
-                  "@babel/plugin-transform-runtime",
+                  '@babel/plugin-transform-runtime',
                   {
                     corejs: 3,
                     // helpers: true,     // 默认true
                     // regenerator: true  // 默认true
-                  }
-                ]
-              ]
-            }
-          }
-        ]
+                  },
+                ],
+              ],
+            },
+          },
+        ],
       },
       {
         // 处理less
@@ -107,40 +107,66 @@ const config: webpack.Configuration = {
           'style-loader', // 创建style标签，将js中的样式资源插入进行，添加到head中生效
           'css-loader', // 将 CSS 转化成 ESModule 模块，默认开启CSS Module
           {
-            loader: 'postcss-loader',  // 给css加厂商前缀和未来css属性兼容
+            loader: 'postcss-loader', // 给css加厂商前缀和未来css属性兼容
             options: {
               postcssOptions: {
                 plugins: [
                   [
-                    PostcssPresetEnv   // postcss-preset-env 包含 autoprefixer
+                    PostcssPresetEnv, // postcss-preset-env 包含 autoprefixer
                   ],
                 ],
               },
             },
           },
-          'less-loader' //将less文件编译成css文件
-        ]
+          'less-loader', //将less文件编译成css文件
+        ],
       },
-    ]
+      {
+        test: /\.(png|svg|jpg|jpeg|gif)$/i,
+        include: path.resolve(__dirname, 'src'),
+        type: 'asset',
+        generator: {
+          filename: 'static/images/[hash][ext][query]',
+        },
+        parser: {
+          dataUrlCondition: {
+            // 设置体积限制大小
+            maxSize: 4 * 1024, // 4kb，小于4k：inline（文件将作为 data URI 注入到 bundle 中）
+          },
+        },
+      },
+      {
+        test: /.(woff|woff2|eot|ttf|otf)$/i,
+        include: path.resolve(__dirname, 'src'),
+        type: 'asset/resource',
+        generator: {
+          filename: 'static/font/[hash][ext][query]',
+        },
+      },
+    ],
   },
   plugins: [
-    new HtmlWebpackPlugin({ // 生成html，自动引入所有bundle
+    new HtmlWebpackPlugin({
+      // 生成html，自动引入所有bundle
       title: 'webpack-ts-loader',
       template: 'public/index.html', // 配置文件模板
     }),
-    new webpack.DefinePlugin({ // 设置环境变量（需要在xxx.d.ts中使用declare声明），并非挂载在window上
-      ICON_URL: JSON.stringify('https://sf3-scmcdn-cn.feishucdn.com/goofy/ee/suite/admin/static/imgs/favicon-feishu@900282fec.svg'),
+    new webpack.DefinePlugin({
+      // 设置环境变量（需要在xxx.d.ts中使用declare声明），并非挂载在window上
+      ICON_URL: JSON.stringify(
+        'https://sf3-scmcdn-cn.feishucdn.com/goofy/ee/suite/admin/static/imgs/favicon-feishu@900282fec.svg'
+      ),
     }),
     new ForkTsCheckerWebpackPlugin({
       eslint: {
         files: './src/**/*.{ts,tsx,js,jsx}',
-        enabled: true
-      }
+        enabled: true,
+      },
     }),
   ],
   devServer: {
     static: {
-      directory: path.join(__dirname, 'build'),  // 设置静态打包文件目录
+      directory: path.join(__dirname, 'build'), // 设置静态打包文件目录
     },
     open: true, // 打开你的默认浏览器
     compress: true, // 在浏览器中以百分比显示编译进度

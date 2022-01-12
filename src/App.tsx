@@ -7,6 +7,7 @@ export const App: React.FC = () => {
     <>
       <h1 onClick={() => setTitle('123')}>{title}</h1>
       <h1>Welcome, webpack</h1>
+      <img src={require('./assets/images/abc.jpeg')} alt="abc.jpeg" width="100px"></img>
     </>
   );
 };

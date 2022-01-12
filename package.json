@@ -7,7 +7,8 @@
     "dev": "cross-env NODE_ENV=development webpack serve",
     "build": "cross-env NODE_ENV=production webpack",
     "lint": "eslint --ext js,jsx,ts,tsx src",
-    "lint:fix": "eslint --ext js,jsx,ts,tsx src --fix"
+    "lint:fix": "eslint --ext js,jsx,ts,tsx src --fix",
+    "prepare": "husky install"
   },
   "keywords": [],
   "author": "",
@@ -57,18 +58,7 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged",
-      "commit-msg": "commitlint -g .commitlintrc.js -E HUSKY_GIT_PARAMS"
-    }
-  },
   "lint-staged": {
-    "*": [
-      "pnpm run lint:fix"
-    ],
-    "src/**/*.{ts,tsx,less}": [
-      "prettier --check --write"
-    ]
+    "src/**/*.{ts,tsx,less}": "prettier --check --write"
   }
 }

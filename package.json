@@ -59,6 +59,6 @@
     "react-dom": "^17.0.2"
   },
   "lint-staged": {
-    "src/**/*.{ts,tsx,less}": "prettier --check --write"
+    "src/**/*.{ts,tsx,less}": ["eslint", "prettier --check --write"]
   }
 }

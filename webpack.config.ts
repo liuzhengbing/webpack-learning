@@ -144,7 +144,7 @@ const config: webpack.Configuration = {
                     // regenerator: true  // 默认true
                   },
                 ],
-                ['import', { libraryName: 'antd', style: true }],
+                ['import', { libraryName: 'antd', style: true }], // babel-plugin-import按需引入antd的css样式
               ],
             },
           },

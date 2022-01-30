@@ -7,6 +7,9 @@
     <meta name="build-type" content="<%= BUILD_TYPE %>">
     <link rel="icon" href="<%= ICON_URL %>">
     <title><%= htmlWebpackPlugin.options.title %></title>
+    <% for (let i = 0; i < htmlWebpackPlugin.options.scriptList.length; i++) {%>
+      <%= htmlWebpackPlugin.options.scriptList[i] %>
+    <% } %>
   </head>
   <body>
     <noscript>

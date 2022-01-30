@@ -12,6 +12,33 @@ import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer'; // 查看打包�
 type EnvType = 'none' | 'development' | 'production' | undefined;
 const isProduction = process.env.NODE_ENV === 'production';
 
+// 常用cdn：http://www.staticfile.org/   https://cdn.baomitu.com/
+const cdnList = [
+  {
+    key: 'react',
+    value: 'React',
+    scriptDevelopment:
+      '<script crossorigin="anonymous"  src="https://cdn.staticfile.org/react/17.0.2/umd/react.development.min.js"></script>',
+    scriptProduction:
+      '<script crossorigin="anonymous"  src="https://cdn.staticfile.org/react/17.0.2/umd/react.production.min.js"></script>',
+  },
+  {
+    key: 'react-dom',
+    value: 'ReactDOM',
+    scriptDevelopment:
+      '<script crossorigin="anonymous" src="https://cdn.staticfile.org/react-dom/17.0.2/umd/react-dom.development.min.js"></script>',
+    scriptProduction:
+      '<script crossorigin="anonymous"  src="https://cdn.staticfile.org/react-dom/17.0.2/umd/react-dom.production.min.js"></script>',
+  },
+];
+
+const externals: any = {};
+const scriptList: string[] = [];
+cdnList.forEach((item) => {
+  externals[item.key] = item.value;
+  isProduction ? scriptList.push(item.scriptProduction) : scriptList.push(item.scriptDevelopment);
+});
+
 const config: webpack.Configuration = {
   mode: process.env.NODE_ENV as EnvType,
   devtool: isProduction ? false : 'eval-cheap-module-source-map',
@@ -23,15 +50,15 @@ const config: webpack.Configuration = {
     // 编译前清除目录
     clean: true,
 
-    // 默认
-    // publicPath: 'auto',
-    // 相对于index.html获取资源，如<script src="./app.js"></script>
-    // publicPath: './',
-    // 从当前服务器根路径获取资源，如<script src="/assets/app.js"></script>，通过xxx:9000/assets/来访问线上服务器，需要设置前端路由的base为”assets“
+    // publicPath: 'auto', // 默认
+    // publicPath: './',  // 相对于index.html获取资源，如<script src="./app.js"></script>
     // publicPath: '/assets/',
+    // 从当前服务器根路径获取资源，如<script src="/assets/app.js"></script>，通过xxx:9000/assets/来访问线上服务器，需要设置前端路由的base为”assets“
+    // publicPath: 'https://cdn.example.com/assets/',
     // 从https://cdn.example.com/assets/ 获取资源，如<script src="https://cdn.example.com/assets/app.js"></script>
-    // publicPath: 'https://cdn.example.com/assets/'
   },
+  // cdn引入第三方库
+  externals: externals,
   // performance: {
   //   maxEntrypointSize: 512000,
   //   maxAssetSize: 512000,
@@ -206,7 +233,9 @@ const config: webpack.Configuration = {
       // 生成html，自动引入所有bundle
       title: 'webpack-ts-loader',
       template: 'public/index.html', // 配置文件模板
-    }),
+      // publicPath: './',
+      scriptList,
+    }) as any,
     new webpack.DefinePlugin({
       // 设置环境变量（需要在xxx.d.ts中使用declare声明），并非挂载在window上
       ICON_URL: JSON.stringify(
@@ -273,6 +302,18 @@ const config: webpack.Configuration = {
               priority: 0,
               name: 'echartsVendor',
             },
+            'rc-picker': {
+              chunks: 'all',
+              test: /rc-picker/,
+              priority: 0,
+              name: 'rcPicker',
+            },
+            'rc-vendor': {
+              chunks: 'all',
+              test: /rc-/,
+              priority: 0,
+              name: 'rcVendor',
+            },
           },
         },
       }
@@ -314,6 +355,18 @@ const config: webpack.Configuration = {
               test: /[\\/]node_modules[\\/]echarts[\\/]/,
               priority: 0,
               name: 'echartsVendor',
+            },
+            'rc-picker': {
+              chunks: 'all',
+              test: /rc-picker/,
+              priority: 0,
+              name: 'rcPicker',
+            },
+            'rc-vendor': {
+              chunks: 'all',
+              test: /rc-/,
+              priority: 0,
+              name: 'rcVendor',
             },
           },
         },
